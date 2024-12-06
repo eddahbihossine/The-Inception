@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  mariadb:
+    container_name: mariadb
+    build:
+      context: ./Mariadb
+      dockerfile: Dockerfile
+    expose:
+      - "3306"                          # Expose port for inter-container communication
+    env_file: ./.env
+                    # Use an env file for environment variables
+    volumes:
+      - mariadb:/var/lib/mysql          # Persist MariaDB data
+    networks:
+      - inception                        # Specify the network
+    restart: unless-stopped             # Restart policy                       # Expose port for inter-container communication
+
+  nginx:
+    container_name: nginx
+    build:
+      context: ./Nginx
+      dockerfile: Dockerfile
+    env_file: ./.env
+                    # Use an env file for environment variables
+    volumes:
+      - wordpress:/var/www/wordpress     # Share WordPress files
+    networks:
+      - inception                        # Specify the network
+    depends_on:
+      - wordpress                        # Ensure WordPress starts before NGINX
+    ports:
+      - "443:443"                       # Expose port to the host
+    restart: on-failure                  # Restart only on failure
+
+  wordpress:
+    container_name: wordpress
+    build:
+      context: ./Wordpress
+      dockerfile: Dockerfile
+    env_file: ./.env                      # Use an env file for environment variables
+    volumes:
+      - wordpress:/var/www/wordpress     # Persist WordPress files
+    networks:
+      - inception                        # Specify the network
+    depends_on:
+      - mariadb                          # Ensure MariaDB starts before WordPress
+    restart: on-failure                  # Restart only on failure
+    expose:
+      - "9000"                          # Expose PHP-FPM port for NGINX
+
+volumes:
+  wordpress:
+    driver: local                       # Store volume locally
+    driver_opts:
+      type: 'none'                      # No specific type
+      o: 'bind'
+      device: './data/wordpress'         # Local storage path for WordPress
+  mariadb:
+    driver: local                       # Store volume locally
+    driver_opts:
+      type: 'none'                      # No spexcific type
+      o: 'bind'
+      device: './data/mariadb'           # Local storage path for MariaDB
+
+networks:
+  inception:
+    driver: bridge                     # Use a bridge network for communication
