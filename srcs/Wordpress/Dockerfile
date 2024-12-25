@@ -1,41 +1,26 @@
-# Use the official Debian Buster image as the base
-FROM debian:buster
+FROM debian:bullseye-slim
 
-# Update package list and install necessary packages
-RUN apt-get update && apt-get install -y \
-        php7.3 \
-        php-fpm \
-        php-mysql \
-        wget \
-        mariadb-client \
+# Install necessary packages
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    curl bash vim mariadb-client \
+    php php-cli php-curl php-fpm php-mysqli php-json php-phar php-iconv \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
-# Download and extract WordPress
-RUN wget https://fr.wordpress.org/wordpress-6.0-fr_FR.tar.gz -P /var/www \
-    && tar -xzf /var/www/wordpress-6.0-fr_FR.tar.gz -C /var/www \
-    && rm /var/www/wordpress-6.0-fr_FR.tar.gz \
-    && mkdir -p /var/www/html \
-    && mv /var/www/wordpress/* /var/www/html \
-    && chown -R www-data:www-data /var/www/html
+RUN update-ca-certificates
 
-# Install WP-CLI
-RUN wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
+RUN curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar \
     && chmod +x wp-cli.phar \
     && mv wp-cli.phar /usr/local/bin/wp
 
-# Copy the config creation script
-COPY ./conf/start.sh /etc/wordpress/conf/start.sh
-RUN chmod +x /etc/wordpress/conf/start.sh
 
-# Copy the WordPress configuration file
-# COPY conf/wp-config.php /var/www/html/wp-config.php
+RUN mkdir -p /run/php && chown -R www-data:www-data /run/php
 
-# Set up PHP-FPM directory
-RUN mkdir -p /run/php \
-    && chown -R www-data:www-data /run/php
+COPY conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
-# Expose the necessary port for PHP-FPM
-EXPOSE 9000
+WORKDIR /var/www/wordpress
 
-# Start PHP-FPM in the foreground
-CMD ["/etc/wordpress/conf/start.sh"]
+COPY tools/start.sh /tmp/configure.sh
+
+# Set entrypoint
+ENTRYPOINT ["sh", "/tmp/configure.sh"]
