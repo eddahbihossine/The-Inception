@@ -18,6 +18,8 @@ RUN mkdir -p /run/php && chown -R www-data:www-data /run/php
 
 COPY conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
+COPY /tools/wp-config.php /var/www/wordpress/wp-config.php
+
 WORKDIR /var/www/wordpress
 
 COPY tools/start.sh /tmp/configure.sh
