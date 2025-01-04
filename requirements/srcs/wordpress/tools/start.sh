@@ -1,6 +1,6 @@
 #!/bin/sh
 
- chown -R www-data:www-data /var/www/wordpress
+chown -R www-data:www-data /var/www/wordpress
 chmod -R 755 /var/www/wordpress
 
 
@@ -17,9 +17,7 @@ if [ ! -f "/var/www/wordpress/wp-config.php" ]; then
         echo "WordPress installation failed."
         exit 1
     fi
-    wp user create "$WP_USR" "$WP_EMAIL" --role=author --user_pass="$WP_PWD" --allow-root
-
-    wp theme install SaasLauncher --activate --allow-root
+    wp user create "$WP_USR" "$WP_EMAIL" --role=author --user_pass="$WP_PWD"  --allow-root
 else
     echo "WordPress is already installed. Skipping installation."
 fi

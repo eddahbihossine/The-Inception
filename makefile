@@ -1,10 +1,16 @@
 
 up:
-	docker-compose -f srcs/docker-compose.yml up -d --build
+	docker compose -f requirements/srcs/docker-compose.yml up --build
 
 
 down:
-	docker-compose -f srcs/docker-compose.yml down
+	docker compose -f requirements/srcs/docker-compose.yml down -v
+
+
+prune :
+	docker compose -f requirements/srcs/docker-compose.yml down -v
+	docker volume prune 
+	docker system prune -af
 
 
 clean:

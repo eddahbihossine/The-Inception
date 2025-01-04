@@ -6,7 +6,7 @@ services:
     hostname: mariadb
     container_name: mariadb
     build:
-      context: ./Mariadb
+      context: ./mariadb
       dockerfile: Dockerfile
     env_file:
       - ./.env
@@ -27,7 +27,7 @@ services:
     hostname: nginx
     container_name: nginx
     build:
-      context: ./Nginx
+      context: ./nginx
       dockerfile: Dockerfile
     env_file: ./.env  
     networks:
@@ -45,13 +45,13 @@ services:
     hostname: wordpress
     container_name: wordpress
     build:
-      context: ./Wordpress
+      context: ./wordpress
       dockerfile: Dockerfile
     env_file: ./.env  
     volumes:
       - wordpress:/var/www/wordpress  
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000"]
+      test: ["CMD", "curl", "-f", "http://heddahbi.42.fr:9000"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -67,13 +67,13 @@ volumes:
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/Users/macair/thelast_shit/srcs/data/wp'  
+      device: '/home/heddahbi/data/wp'  
   mariadb:
     driver: local
     driver_opts:
       type: 'none'
       o: 'bind'
-      device: '/Users/macair/thelast_shit/srcs/data/mariadb'
+      device: '/home/heddahbi/data/mariadb'
 
 networks:
   inception:
