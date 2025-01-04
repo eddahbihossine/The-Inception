@@ -13,7 +13,7 @@ if [ ! -f "/var/www/wordpress/wp-config.php" ]; then
     chown -R www-data:www-data /var/www/wordpress/
     wp config create --dbname="$DB_NAME" --dbuser="$DB_USER" --dbpass="$DB_PASSWORD" --dbhost="$SQL_HOST" --dbcharset="utf8" --dbcollate="utf8_general_ci" --allow-root
 
-    if ! wp core install --url="$WP_URL" --title="$WP_TITLE" --admin_user="$WP_ADMIN" --admin_password="$WP_ADMINPWD" --admin_email="$WP_EMAIL" --allow-root; then
+    if ! wp core install --url="$WP_URL" --title="$WP_TITLE" --admin_user="$WP_ADMIN" --admin_password="$WP_ADMINPWD" --admin_email="$WP_EMAIL1" --allow-root; then
         echo "WordPress installation failed."
         exit 1
     fi
